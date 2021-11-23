@@ -52,6 +52,7 @@ protected:
 	float InputForwardDir = 0.0f;
 	float InputRightDir = 0.0f;
 	FVector MoveDir = FVector::ZeroVector;
+	FVector BodyDir = FVector::ZeroVector;
 
 	// 시점
 	void TurnAtRate(float Rate);
@@ -73,5 +74,7 @@ public:
 
 	// 이동
 	bool GetIsMove() { return IsMove; }
+	FVector GetMoveDir() { return MoveDir; }
+	FVector GetBodyDir() { return BodyDir; }
 
 };

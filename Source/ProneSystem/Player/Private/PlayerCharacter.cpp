@@ -49,8 +49,8 @@ APlayerCharacter::APlayerCharacter()
 	GetMesh()->SetCollisionProfileName("CharacterMesh");
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh>FULLBODY_SKELETALMESH(TEXT("SkeletalMesh'/Game/Mannequin/Character/Mesh/SK_Mannequin.SK_Mannequin'"));
 	if (FULLBODY_SKELETALMESH.Succeeded()) { GetMesh()->SetSkeletalMesh(FULLBODY_SKELETALMESH.Object); }
-	//static ConstructorHelpers::FClassFinder<UAnimInstance>FULLBODY_ANIMBP(TEXT("AnimBlueprint'/Game/Mannequin/Animations/ThirdPerson_AnimBP.ThirdPerson_AnimBP_C'"));
-	//if (FULLBODY_ANIMBP.Succeeded()) { GetMesh()->SetAnimInstanceClass(FULLBODY_ANIMBP.Class); }
+	static ConstructorHelpers::FClassFinder<UAnimInstance>FULLBODY_ANIMBP(TEXT("AnimBlueprint'/Game/MaxFile/Anim/PlayerAnimBP.PlayerAnimBP_C'"));
+	if (FULLBODY_ANIMBP.Succeeded()) { GetMesh()->SetAnimInstanceClass(FULLBODY_ANIMBP.Class); }
 
 	CameraArrow = CreateDefaultSubobject<UArrowComponent>(TEXT("CameraArrow"));
 	CameraArrow->SetupAttachment(RootComponent);
@@ -147,6 +147,8 @@ void APlayerCharacter::PlayerMove(bool IsAactive, float Forward, float Right, FV
 		AddMovementInput(Dir, FMath::GetMappedRangeValueClamped(FVector2D(0.0f, 1.0f), FVector2D(0.0f, Speed), InputDir) * DeltaSecond);
 		//DownState->PlayerMove(this, inputDir, inputDirRight);
 		MoveInputArrow->SetWorldRotation(Dir.Rotation());
+		BodyDir = FMath::VInterpTo(BodyDir, MoveDir, DeltaSecond, 1.35f);
+		BodyArrow->SetWorldRotation(BodyDir.Rotation());
 	}
 }
 

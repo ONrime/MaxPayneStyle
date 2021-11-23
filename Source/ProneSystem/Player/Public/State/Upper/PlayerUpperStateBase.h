@@ -8,7 +8,7 @@
 #include "Player/Public/PlayerCharacter.h"
 #include "PlayerUpperStateBase.generated.h"
 
-//플레이어 상체 상태 표시 하는 열거형
+// 플레이어 상체 상태 표시 하는 열거형
 UENUM(BlueprintType)
 enum class EPlayerUpperState : uint8 {
 	UNARMED UMETA(DisplayName = "Unarmed"),

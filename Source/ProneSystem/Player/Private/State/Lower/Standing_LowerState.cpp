@@ -32,6 +32,8 @@ UPlayerLowerStateBase* UStanding_LowerState::ChangeState(EPlayerLowerState State
 void UStanding_LowerState::StateStart_Implementation(APlayerCharacter* Player)
 {
 	UE_LOG(LogTemp, Warning, TEXT("UStanding_LowerState: StateStart"));
+
+	Player->PlayerSpeed = 01.f;
 }
 
 void UStanding_LowerState::StateUpdate_Implementation(APlayerCharacter* Player, float DeltaSecond)
