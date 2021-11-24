@@ -34,3 +34,11 @@ UClass* UPlayerUpperStateBase::GetStateClass_Implementation()
 {
 	return nullptr;
 }
+
+void UPlayerUpperStateBase::AnimInsUpdate(APlayerCharacter* Player, float& RootYaw, float& AimYaw, float& UpperYaw)
+{
+}
+
+void UPlayerUpperStateBase::PlayerFire(APlayerCharacter* Player)
+{
+}

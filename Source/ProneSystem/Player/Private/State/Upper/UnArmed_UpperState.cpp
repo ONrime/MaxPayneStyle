@@ -32,6 +32,10 @@ void UUnArmed_UpperState::StateEnd_Implementation(APlayerCharacter* Player)
     UE_LOG(LogTemp, Warning, TEXT("UUnArmed_UpperState: StateEnd"));
 }
 
+void UUnArmed_UpperState::AnimInsUpdate(APlayerCharacter* Player, float& RootYaw, float& AimYaw, float& UpperYaw)
+{
+}
+
 UClass* UUnArmed_UpperState::GetStateClass_Implementation()
 {
     return UUnArmed_UpperState::StaticClass();

@@ -22,10 +22,10 @@ UPlayerUpperStateBase* UArmed_UpperState::HandleInput(APlayerCharacter* Player)
 	TArray <FInputActionKeyMapping> ActionADS = PlayerInput->GetKeysForAction(TEXT("ADS"));
 	TArray <FInputActionKeyMapping> ActionFire = PlayerInput->GetKeysForAction(TEXT("Fire"));
 
-	if (PlayerInput->InputKey(ActionADS[0].Key, EInputEvent::IE_Pressed, 1.0f, true)) {
+	if (PlayerInput->IsPressed(ActionADS[0].Key)) {
 		temp = NewObject<UADS_UpperState>(this, UADS_UpperState::StaticClass());
 	}
-	else if (PlayerInput->InputKey(ActionFire[0].Key, EInputEvent::IE_Pressed, 1.0f, true)){
+	else if (PlayerInput->IsPressed(ActionFire[0].Key)){
 		temp = NewObject<UAim_UpperState>(this, UAim_UpperState::StaticClass());
 	}
 
@@ -51,6 +51,15 @@ void UArmed_UpperState::StateUpdate_Implementation(APlayerCharacter* Player, flo
 void UArmed_UpperState::StateEnd_Implementation(APlayerCharacter* Player)
 {
 	UE_LOG(LogTemp, Warning, TEXT("UArmed_UpperState: StateEnd"));
+}
+
+void UArmed_UpperState::AnimInsUpdate(APlayerCharacter* Player, float& RootYaw, float& AimYaw, float& UpperYaw)
+{
+}
+
+void UArmed_UpperState::PlayerFire(APlayerCharacter* Player)
+{
+	Super::PlayerFire(Player);
 }
 
 UClass* UArmed_UpperState::GetStateClass_Implementation()

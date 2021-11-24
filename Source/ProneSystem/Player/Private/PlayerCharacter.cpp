@@ -4,6 +4,7 @@
 #include "Player/Public/PlayerCharacter.h"
 #include "Player/Public/State/Upper/Armed_UpperState.h"
 #include "Player/Public/State/Upper/UnArmed_UpperState.h"
+#include "Player/Public/State/Upper/Aim_UpperState.h"
 #include "Player/Public/State/Lower/Standing_LowerState.h"
 #include "Components/ArrowComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -75,9 +76,21 @@ void APlayerCharacter::BeginPlay()
 	Super::BeginPlay();
 	
 	UpperState = NewObject<UArmed_UpperState>(this, UArmed_UpperState::StaticClass());
+	//UpperState = NewObject<UAim_UpperState>(this, UAim_UpperState::StaticClass());
 	LowerState = NewObject<UStanding_LowerState>(this, UStanding_LowerState::StaticClass());
 	UpperState->StateStart(this);
 	LowerState->StateStart(this);
+
+}
+
+void APlayerCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	ChangeStateCheck.BindLambda([this](int Set)->void
+	{
+		UpperPress(UpperState->ChangeState((EPlayerUpperState)Set));
+	});
 
 }
 
@@ -107,6 +120,7 @@ void APlayerCharacter::UpperPress(UPlayerUpperStateBase* State)
 		UpperState->DestroyComponent();
 		UpperState = temp;
 		UpperState->SetEBeforeState(Before);
+		UpperStateNowEnum = UpperState->GetEState();
 		UpperStateNowClass = UpperState->GetStateClass();
 		UpperState->StateStart(this);
 	}
@@ -200,12 +214,45 @@ void APlayerCharacter::PlayerProne()
 {
 }
 
+void APlayerCharacter::PlayerArmed()
+{
+}
+
+void APlayerCharacter::PlayerAim()
+{
+}
+
+void APlayerCharacter::PlayerADS()
+{
+	UE_LOG(LogTemp, Warning, TEXT("PlayerADS"));
+	UpperPress();
+}
+
+void APlayerCharacter::PlayerUnADS()
+{
+	UpperPress();
+}
+
+void APlayerCharacter::PlayerFire()
+{
+	UE_LOG(LogTemp, Warning, TEXT("PlayerFire"));
+	UpperPress();
+	UpperState->PlayerFire(this);
+}
+
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+	PlayerInputComponent->BindAction("ArmedState", IE_Pressed, this, &APlayerCharacter::StopJumping);
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &APlayerCharacter::PlayerFire);
+	PlayerInputComponent->BindAction("ADS", IE_Pressed, this, &APlayerCharacter::PlayerADS);
+	PlayerInputComponent->BindAction("ADS", IE_Released, this, &APlayerCharacter::PlayerUnADS);
+
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &APlayerCharacter::StopJumping);
+	PlayerInputComponent->BindAction("ADS", IE_Pressed, this, &APlayerCharacter::StopJumping);
 	//PlayerInputComponent->BindAction("Prone", IE_Released, this, &APlayerCharacter::PlayerProne);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &APlayerCharacter::MoveForward);

@@ -27,5 +27,17 @@ public:
 	virtual void StateUpdate_Implementation(class APlayerCharacter* Player, float DeltaSecond) override;
 	virtual void StateEnd_Implementation(class APlayerCharacter* Player) override;
 
+	// AnimIns
+	virtual void AnimInsUpdate(class APlayerCharacter* Player, float& RootYaw, float& AimYaw, float& UpperYaw) override;
+
+	virtual void PlayerFire(class APlayerCharacter* Player) override;
+
 	virtual UClass* GetStateClass_Implementation() override;
+
+protected:
+	void ChangeArmed();
+
+	FTimerHandle ArmedTimer;
+	class APlayerCharacter* PlayerCharacter = nullptr;
+
 };

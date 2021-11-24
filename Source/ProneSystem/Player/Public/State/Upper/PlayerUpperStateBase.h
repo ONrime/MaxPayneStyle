@@ -8,15 +8,6 @@
 #include "Player/Public/PlayerCharacter.h"
 #include "PlayerUpperStateBase.generated.h"
 
-// 플레이어 상체 상태 표시 하는 열거형
-UENUM(BlueprintType)
-enum class EPlayerUpperState : uint8 {
-	UNARMED UMETA(DisplayName = "Unarmed"),
-	ARMED UMETA(DisplayName = "Armed"),
-	AIM UMETA(DisplayName = "Aim"),
-	ADS UMETA(DisplayName = "ADS")
-};
-
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PRONESYSTEM_API UPlayerUpperStateBase : public UActorComponent, public IPlayerStateBase
 {
@@ -46,6 +37,11 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "State")
 	UClass* GetStateClass();
 	virtual UClass* GetStateClass_Implementation() override;
+
+	// AnimIns
+	virtual void AnimInsUpdate(class APlayerCharacter* Player, float& RootYaw, float& AimYaw, float& UpperYaw);
+
+	virtual void PlayerFire(class APlayerCharacter* Player);
 
 	EPlayerUpperState GetEState() { return UpperState; }
 	EPlayerUpperState GetEBeforeState() { return UpperBeforeState; }

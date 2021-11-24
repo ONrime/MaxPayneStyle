@@ -42,7 +42,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Aim, Meta = (AllowPrivateAccess = true))
 	float UpperPitch = 0.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Aim, Meta = (AllowPrivateAccess = true))
-	float RootYaw = 0.0f;
+	float AimYaw = 0.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Aim, Meta = (AllowPrivateAccess = true))
 	float UpperProneYaw = 0.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Base, Meta = (AllowPrivateAccess = true))
@@ -58,13 +58,26 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Move, Meta = (AllowPrivateAccess = true))
 	float DirForward = 0.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Move, Meta = (AllowPrivateAccess = true))
+	float RootYaw = 0.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Move, Meta = (AllowPrivateAccess = true))
 	float DirRight = 0.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = true))
 	UClass* LowerStateNClass = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = true))
 	UClass* UpperStateNClass = nullptr;
 
+	// Move 贸府
 	void GetMoveDirBlend(FVector Velocity, FRotator Rot, FMoveDirBlend& Current);
+
+	// 雀傈 贸府
+	void ArmedBodyYaw(class APlayerCharacter* Player, float& Root, float& Aim, float& Upper);
+	void AimBodyYaw(class APlayerCharacter* Player, float& Root, float& Aim, float& Upper);
+	void ADSBodyYaw(class APlayerCharacter* Player, float& Root, float& Aim, float& Upper);
+
+	bool IsTurn = false;
+	FRotator TurnDir = FRotator::ZeroRotator;
+	FRotator TurnDirEnd = FRotator::ZeroRotator;
+	float RootRotInterpSpeed = 0.0f;
 	//float DirForward = 0.0f;
 	//float DirRight = 0.0f;
 

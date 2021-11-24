@@ -8,16 +8,6 @@
 #include "Player/Public/PlayerCharacter.h"
 #include "PlayerLowerStateBase.generated.h"
 
-//플레이어 하체 상태 표시 하는 열거형
-UENUM(BlueprintType)
-enum class EPlayerLowerState : uint8 {
-	STANDING UMETA(DisplayName = "Standing"),
-	CROUCH UMETA(DisplayName = "Crouch"),
-	SPLINT UMETA(DisplayName = "Splint"),
-	SLIDING UMETA(DisplayName = "Sliding"),
-	PRONE UMETA(DisplayName = "Prone")
-};
-
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PRONESYSTEM_API UPlayerLowerStateBase : public UActorComponent, public IPlayerStateBase
 {

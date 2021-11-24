@@ -6,6 +6,27 @@
 #include "GameFramework/Character.h"
 #include "PlayerCharacter.generated.h"
 
+DECLARE_DELEGATE_OneParam(FPlayerStateCheck, int);
+
+// 플레이어 상체 상태 표시 하는 열거형
+UENUM(BlueprintType)
+enum class EPlayerUpperState : uint8 {
+	UNARMED UMETA(DisplayName = "Unarmed"),
+	ARMED UMETA(DisplayName = "Armed"),
+	AIM UMETA(DisplayName = "Aim"),
+	ADS UMETA(DisplayName = "ADS")
+};
+
+//플레이어 하체 상태 표시 하는 열거형
+UENUM(BlueprintType)
+enum class EPlayerLowerState : uint8 {
+	STANDING UMETA(DisplayName = "Standing"),
+	CROUCH UMETA(DisplayName = "Crouch"),
+	SPLINT UMETA(DisplayName = "Splint"),
+	SLIDING UMETA(DisplayName = "Sliding"),
+	PRONE UMETA(DisplayName = "Prone")
+};
+
 UCLASS()
 class PRONESYSTEM_API APlayerCharacter : public ACharacter
 {
@@ -41,6 +62,7 @@ protected:
 	// 상태
 	class UPlayerUpperStateBase* UpperState = nullptr;
 	class UPlayerLowerStateBase* LowerState = nullptr;
+	EPlayerUpperState UpperStateNowEnum;
 	void UpperPress(class UPlayerUpperStateBase* State = nullptr);
 	void LowerPress(class UPlayerLowerStateBase* State = nullptr);
 
@@ -58,11 +80,17 @@ protected:
 	void TurnAtRate(float Rate);
 	void LookUpAtRate(float Rate);
 
-	// Input
+	// 입력
 	void PlayerProne();
+	void PlayerArmed();
+	void PlayerAim();
+	void PlayerADS();
+	void PlayerUnADS();
+	void PlayerFire();
 
 // 에디터 외에 노출해야 되는 변수 및 함수들
 public:	
+	virtual void PostInitializeComponents() override;
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
@@ -71,7 +99,9 @@ public:
 	UClass* LowerStateNowClass = nullptr;
 	UClass* UpperStateBeforeClass = nullptr;
 	UClass* LowerStateBeforeClass = nullptr;
-
+	EPlayerUpperState GetUpperStateNowEnum() { return UpperStateNowEnum; }
+	class UPlayerUpperStateBase* GetUpperState() { return UpperState; }
+	FPlayerStateCheck ChangeStateCheck;
 	// 이동
 	bool GetIsMove() { return IsMove; }
 	FVector GetMoveDir() { return MoveDir; }
