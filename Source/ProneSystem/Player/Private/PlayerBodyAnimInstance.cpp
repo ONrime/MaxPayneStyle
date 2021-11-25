@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+癤�// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Player/Public/PlayerBodyAnimInstance.h"
@@ -25,19 +25,21 @@ void UPlayerBodyAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 		PlayerSpeed = Player->GetVelocity().Size();
 
-		//GetMoveDirBlend(Player->GetVelocity(), Player->GetActorRotation(), MoveDirBlend); // ADS
 		//GetMoveDirBlend(Player->GetVelocity(), Player->GetMoveDir().Rotation(), MoveDirBlend);
-		GetMoveDirBlend(Player->GetVelocity(), Player->GetBodyDir().Rotation(), MoveDirBlend); // Aim, Armed
+		//GetMoveDirBlend(Player->GetVelocity(), Player->GetBodyDir().Rotation(), MoveDirBlend); // Aim, Armed
 
 		switch (Player->GetUpperStateNowEnum())
 		{
 		case EPlayerUpperState::ARMED:
+			GetMoveDirBlend(Player->GetVelocity(), Player->GetBodyDir().Rotation(), MoveDirBlend); // Aim, Armed
 			ArmedBodyYaw(Player, RootYaw, AimYaw, UpperYaw);
 			break;
 		case EPlayerUpperState::AIM:
+			GetMoveDirBlend(Player->GetVelocity(), Player->GetBodyDir().Rotation(), MoveDirBlend); // Aim, Armed
 			AimBodyYaw(Player, RootYaw, AimYaw, UpperYaw);
 			break;
 		case EPlayerUpperState::ADS:
+			GetMoveDirBlend(Player->GetVelocity(), Player->GetActorRotation(), MoveDirBlend); // ADS
 			ADSBodyYaw(Player, RootYaw, AimYaw, UpperYaw);
 			break;
 		}
@@ -45,9 +47,9 @@ void UPlayerBodyAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		//AimBodyYaw(Player, RootYaw, AimYaw, UpperYaw);
 		//ADSBodyYaw(Player, RootYaw, AimYaw, UpperYaw);
 		
-		//UE_LOG(LogTemp, Warning, TEXT("RootYaw: %f"), RootYaw);
-		///UE_LOG(LogTemp, Warning, TEXT("AimYaw: %f"), AimYaw);
-		//UE_LOG(LogTemp, Warning, TEXT("UpperYaw: %f"), UpperYaw);
+		UE_LOG(LogTemp, Warning, TEXT("RootYaw: %f"), RootYaw);
+		UE_LOG(LogTemp, Warning, TEXT("AimYaw: %f"), AimYaw);
+		UE_LOG(LogTemp, Warning, TEXT("UpperYaw: %f"), UpperYaw);
 		//UE_LOG(LogTemp, Warning, TEXT("Test: %f"), Test.Yaw);
 
 		LowerStateNClass = Player->LowerStateNowClass;
@@ -104,16 +106,12 @@ void UPlayerBodyAnimInstance::GetMoveDirBlend(FVector Velocity, FRotator Rot, FM
 
 void UPlayerBodyAnimInstance::ArmedBodyYaw(APlayerCharacter* Player, float& Root, float& Aim, float& Upper)
 {
-	float RootEnd = 0.0f;
-	float RootRotInterpSpeedEnd = 3.0f;
-	FRotator InterpToBodyAngle = (Player->GetBodyDir().Rotation() - Player->GetActorRotation()).GetNormalized();
-
 	if (Player->GetVelocity().Size() > 0.3f)
 	{
 		IsTurn = false;
 		TurnDir = Player->GetActorRotation();
-		TurnDirEnd = Player->GetActorRotation();
-		RootEnd = InterpToBodyAngle.Yaw;
+		FRotator InterpToBodyAngle = (Player->GetBodyDir().Rotation() - Player->GetActorRotation()).GetNormalized();
+		Root = FMath::FInterpTo(Root, InterpToBodyAngle.Yaw, GetWorld()->GetDeltaSeconds(), 3.0f);
 	}
 	else
 	{
@@ -124,13 +122,9 @@ void UPlayerBodyAnimInstance::ArmedBodyYaw(APlayerCharacter* Player, float& Root
 		}
 		TurnDir = FMath::RInterpTo(TurnDir, TurnDirEnd, GetWorld()->GetDeltaSeconds(), 5.0f);
 		FRotator InterpToTurnDirAngle = (Player->GetActorRotation() - TurnDir).GetNormalized();
-		//Upper = FMath::ClampAngle(InterpToTurnDirAngle.Yaw, -90.0f, 90.0f);
 		Upper = InterpToTurnDirAngle.Yaw;
-		RootEnd = -Upper;
-		RootRotInterpSpeedEnd = 100.0f;
+		Root = -Upper;
 	}
-	RootRotInterpSpeed = FMath::FInterpTo(RootRotInterpSpeed, RootRotInterpSpeedEnd, GetWorld()->GetDeltaSeconds(), 5.0f); // Aim 이동o
-	Root = FMath::FInterpTo(Root, RootEnd, GetWorld()->GetDeltaSeconds(), RootRotInterpSpeed); // Aim 이동o
 	Aim = Root;
 }
 
@@ -138,14 +132,48 @@ void UPlayerBodyAnimInstance::AimBodyYaw(APlayerCharacter* Player, float& Root, 
 {
 	float RootEnd = 0.0f;
 	float RootRotInterpSpeedEnd = 3.0f;
-	FRotator InterpToBodyAngle = (Player->GetBodyDir().Rotation() - Player->GetActorRotation()).GetNormalized();
+	
+	if (Player->GetVelocity().Size() > 0.3f)
+	{
+		IsTurn = false;
+		TurnDir = Player->GetActorRotation();
 
+		FRotator InterpToBodyAngle = (Player->GetBodyDir().Rotation() - Player->GetActorRotation()).GetNormalized();
+		FRotator InterpToActorAngle = (Player->GetActorRotation() - Player->GetBodyDir().Rotation()).GetNormalized();
+		Root = FMath::FInterpTo(Root, InterpToBodyAngle.Yaw, GetWorld()->GetDeltaSeconds(), 3.0f);
+		Aim = InterpToActorAngle.Yaw;
+	}
+	else
+	{
+		if (!IsTurn)
+		{
+			IsTurn = true;
+			TurnDirEnd = Player->GetActorRotation();
+		}
+		else
+		{
+			if (Upper >= 70.0f || Upper <= -70.0f)
+			{
+				TurnDirEnd = Player->GetActorRotation();
+			}
+		}
+		TurnDir = FMath::RInterpTo(TurnDir, TurnDirEnd, GetWorld()->GetDeltaSeconds(), 5.0f);
+		FRotator InterpToTurnDirAngle = (Player->GetActorRotation() - TurnDir).GetNormalized();
+		Upper = FMath::ClampAngle(InterpToTurnDirAngle.Yaw, -90.0f, 90.0f);
+		Root = -Upper;
+		Aim = 0.0f;
+	}
+}
+
+void UPlayerBodyAnimInstance::ADSBodyYaw(APlayerCharacter* Player, float& Root, float& Aim, float& Upper)
+{
 	if (Player->GetVelocity().Size() > 0.3f)
 	{
 		IsTurn = false;
 		TurnDir = Player->GetActorRotation();
 		TurnDirEnd = Player->GetActorRotation();
-		RootEnd = InterpToBodyAngle.Yaw;
+
+		Aim = Upper;
 	}
 	else
 	{
@@ -161,47 +189,9 @@ void UPlayerBodyAnimInstance::AimBodyYaw(APlayerCharacter* Player, float& Root, 
 				TurnDirEnd = Player->GetActorRotation();
 			}
 		}
-		TurnDir = FMath::RInterpTo(TurnDir, TurnDirEnd, GetWorld()->GetDeltaSeconds(), 5.0f);
-		FRotator InterpToTurnDirAngle = (Player->GetActorRotation() - TurnDir).GetNormalized();
-		Upper = FMath::ClampAngle(InterpToTurnDirAngle.Yaw, -90.0f, 90.0f);
-		RootEnd = -Upper;
-		RootRotInterpSpeedEnd = 100.0f;
 	}
-	RootRotInterpSpeed = FMath::FInterpTo(RootRotInterpSpeed, RootRotInterpSpeedEnd, GetWorld()->GetDeltaSeconds(), 5.0f); // Aim 이동o
-	Root = FMath::FInterpTo(Root, RootEnd, GetWorld()->GetDeltaSeconds(), RootRotInterpSpeed); // Aim 이동o
-	Aim = Root;
-}
-
-void UPlayerBodyAnimInstance::ADSBodyYaw(APlayerCharacter* Player, float& Root, float& Aim, float& Upper)
-{
-	float RootEnd = 0.0f;
-
-	if (Player->GetVelocity().Size() > 0.3f)
-	{
-		IsTurn = false;
-		//TurnDir = Player->GetActorRotation();
-		//TurnDirEnd = Player->GetActorRotation();
-	}
-	else
-	{
-		if (!IsTurn)
-		{
-			IsTurn = true;
-			TurnDirEnd = Player->GetActorRotation();
-		}
-		else
-		{
-			if (Upper >= 70.0f || Upper <= -70.0f)
-			{
-				TurnDirEnd = Player->GetActorRotation();
-			}
-		}
-
-		TurnDir = FMath::RInterpTo(TurnDir, TurnDirEnd, GetWorld()->GetDeltaSeconds(), 5.0f);
-		FRotator InterpToTurnDirAngle = (Player->GetActorRotation() - TurnDir).GetNormalized();
-		Upper = FMath::ClampAngle(InterpToTurnDirAngle.Yaw, -90.0f, 90.0f);
-		RootEnd = -Upper;
-
-		Root = RootEnd; // Aim 이동o
-	}
+	TurnDir = FMath::RInterpTo(TurnDir, TurnDirEnd, GetWorld()->GetDeltaSeconds(), 5.0f);
+	FRotator InterpToTurnDirAngle = (Player->GetActorRotation() - TurnDir).GetNormalized();
+	Upper = FMath::ClampAngle(InterpToTurnDirAngle.Yaw, -90.0f, 90.0f);
+	Root = -Upper;
 }
