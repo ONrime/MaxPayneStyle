@@ -65,6 +65,8 @@ protected:
 	UClass* LowerStateNClass = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = true))
 	UClass* UpperStateNClass = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = true))
+	UClass* HandStateNClass = nullptr;
 
 	// Move Ã³¸®
 	void GetMoveDirBlend(FVector Velocity, FRotator Rot, FMoveDirBlend& Current);
@@ -73,12 +75,11 @@ protected:
 	void ArmedBodyYaw(class APlayerCharacter* Player, float& Root, float& Aim, float& Upper);
 	void AimBodyYaw(class APlayerCharacter* Player, float& Root, float& Aim, float& Upper);
 	void ADSBodyYaw(class APlayerCharacter* Player, float& Root, float& Aim, float& Upper);
+	void ProneBodyYaw(class APlayerCharacter* Player, float& Root, float& Aim, float& Upper);
 
 	bool IsTurn = false;
 	FRotator TurnDir = FRotator::ZeroRotator;
 	FRotator TurnDirEnd = FRotator::ZeroRotator;
 	float RootRotInterpSpeed = 0.0f;
-	//float DirForward = 0.0f;
-	//float DirRight = 0.0f;
 
 };

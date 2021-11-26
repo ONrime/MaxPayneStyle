@@ -4,8 +4,11 @@
 #include "Player/Public/PlayerCharacter.h"
 #include "Player/Public/State/Upper/Armed_UpperState.h"
 #include "Player/Public/State/Upper/UnArmed_UpperState.h"
-#include "Player/Public/State/Upper/Aim_UpperState.h"
 #include "Player/Public/State/Lower/Standing_LowerState.h"
+#include "Player/Public/State/Upper/PlayerUpperStateBase.h"
+#include "Player/Public/State/Lower/PlayerLowerStateBase.h"
+#include "Player/Public/State/Hand/PlayerHandStateBase.h"
+#include "Player/Public/State/Hand/OneHand_HandState.h"
 #include "Components/ArrowComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 
@@ -78,8 +81,10 @@ void APlayerCharacter::BeginPlay()
 	UpperState = NewObject<UArmed_UpperState>(this, UArmed_UpperState::StaticClass());
 	//UpperState = NewObject<UAim_UpperState>(this, UAim_UpperState::StaticClass());
 	LowerState = NewObject<UStanding_LowerState>(this, UStanding_LowerState::StaticClass());
+	HandState = NewObject<UOneHand_HandState>(this, UOneHand_HandState::StaticClass());
 	UpperState->StateStart(this);
 	LowerState->StateStart(this);
+	HandState->StateStart(this);
 
 }
 
@@ -100,6 +105,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 
 	UpperState->StateUpdate(this, DeltaTime);
 	LowerState->StateUpdate(this, DeltaTime);
+	HandState->StateUpdate(this, DeltaTime);
 
 	PlayerMove(IsMove, InputForwardDir, InputRightDir, MoveDir, PlayerSpeed, DeltaTime);
 
@@ -142,6 +148,25 @@ void APlayerCharacter::LowerPress(UPlayerLowerStateBase* State)
 		LowerState->SetEBeforeState(Before);
 		LowerStateNowClass = LowerState->GetStateClass();
 		LowerState->StateStart(this);
+	}
+}
+
+void APlayerCharacter::HandPress(UPlayerHandStateBase* State)
+{
+	UPlayerHandStateBase* temp = nullptr;
+	if (!State) {
+		temp = HandState->HandleInput(this);
+		if (temp == nullptr) { return; }
+	}
+	else { temp = State; }
+	HandState->StateEnd(this);
+	LowerStateBeforeClass = HandState->GetStateClass();
+	if (temp != nullptr) {
+		HandState->DestroyComponent();
+		HandState = temp;
+		HandStateNowEnum = HandState->GetEState();
+		HandStateNowClass = HandState->GetStateClass();
+		HandState->StateStart(this);
 	}
 }
 
@@ -212,14 +237,29 @@ void APlayerCharacter::LookUpAtRate(float Rate)
 
 void APlayerCharacter::PlayerProne()
 {
+	LowerPress();
 }
 
-void APlayerCharacter::PlayerArmed()
+void APlayerCharacter::PlayerCrouch()
 {
+	LowerPress();
 }
 
-void APlayerCharacter::PlayerAim()
+void APlayerCharacter::PlayerOne1()
 {
+	HandPress();
+}
+void APlayerCharacter::PlayerOne2()
+{
+	HandPress();
+}
+void APlayerCharacter::PlayerTwo()
+{
+	HandPress();
+}
+void APlayerCharacter::PlayerBoth()
+{
+	HandPress();
 }
 
 void APlayerCharacter::PlayerADS()
@@ -251,9 +291,13 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction("ADS", IE_Pressed, this, &APlayerCharacter::PlayerADS);
 	PlayerInputComponent->BindAction("ADS", IE_Released, this, &APlayerCharacter::PlayerUnADS);
 
-	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &APlayerCharacter::StopJumping);
-	PlayerInputComponent->BindAction("ADS", IE_Pressed, this, &APlayerCharacter::StopJumping);
-	//PlayerInputComponent->BindAction("Prone", IE_Released, this, &APlayerCharacter::PlayerProne);
+	PlayerInputComponent->BindAction("Crouch", IE_Pressed, this, &APlayerCharacter::PlayerCrouch);
+	PlayerInputComponent->BindAction("Prone", IE_Pressed, this, &APlayerCharacter::PlayerProne);
+
+	PlayerInputComponent->BindAction("OneWeapon", IE_Pressed, this, &APlayerCharacter::PlayerOne1);
+	PlayerInputComponent->BindAction("TwoWeapon", IE_Pressed, this, &APlayerCharacter::PlayerOne1);
+	PlayerInputComponent->BindAction("TwoHandWeapon", IE_Pressed, this, &APlayerCharacter::PlayerTwo);
+	PlayerInputComponent->BindAction("BothWeapon", IE_Pressed, this, &APlayerCharacter::PlayerBoth);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &APlayerCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &APlayerCharacter::MoveRight);

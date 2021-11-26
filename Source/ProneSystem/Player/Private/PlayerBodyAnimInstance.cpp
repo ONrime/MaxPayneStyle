@@ -25,35 +25,50 @@ void UPlayerBodyAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 		PlayerSpeed = Player->GetVelocity().Size();
 
-		//GetMoveDirBlend(Player->GetVelocity(), Player->GetMoveDir().Rotation(), MoveDirBlend);
-		//GetMoveDirBlend(Player->GetVelocity(), Player->GetBodyDir().Rotation(), MoveDirBlend); // Aim, Armed
-
-		switch (Player->GetUpperStateNowEnum())
+		if (Player->IsProne)
 		{
-		case EPlayerUpperState::ARMED:
-			GetMoveDirBlend(Player->GetVelocity(), Player->GetBodyDir().Rotation(), MoveDirBlend); // Aim, Armed
-			ArmedBodyYaw(Player, RootYaw, AimYaw, UpperYaw);
-			break;
-		case EPlayerUpperState::AIM:
-			GetMoveDirBlend(Player->GetVelocity(), Player->GetBodyDir().Rotation(), MoveDirBlend); // Aim, Armed
-			AimBodyYaw(Player, RootYaw, AimYaw, UpperYaw);
-			break;
-		case EPlayerUpperState::ADS:
-			GetMoveDirBlend(Player->GetVelocity(), Player->GetActorRotation(), MoveDirBlend); // ADS
-			ADSBodyYaw(Player, RootYaw, AimYaw, UpperYaw);
-			break;
+			//GetMoveDirBlend(Player->GetVelocity(), Player->GetActorRotation(), MoveDirBlend);
+			ProneBodyYaw(Player, RootYaw, AimYaw, UpperYaw);
 		}
-		//ArmedBodyYaw(Player, RootYaw, AimYaw, UpperYaw);
-		//AimBodyYaw(Player, RootYaw, AimYaw, UpperYaw);
-		//ADSBodyYaw(Player, RootYaw, AimYaw, UpperYaw);
+		else {
+			switch (Player->GetUpperStateNowEnum())
+			{
+			case EPlayerUpperState::ARMED:
+				GetMoveDirBlend(Player->GetVelocity(), Player->GetBodyDir().Rotation(), MoveDirBlend); // Aim, Armed
+				ArmedBodyYaw(Player, RootYaw, AimYaw, UpperYaw);
+				break;
+			case EPlayerUpperState::AIM:
+				switch (Player->GetHandStateNowEnum())
+				{
+				case EPlayerHandState::ONEHAND:
+					GetMoveDirBlend(Player->GetVelocity(), Player->GetBodyDir().Rotation(), MoveDirBlend); // Aim, Armed
+					AimBodyYaw(Player, RootYaw, AimYaw, UpperYaw);
+					break;
+				case EPlayerHandState::TWOHAND:
+					GetMoveDirBlend(Player->GetVelocity(), Player->GetActorRotation(), MoveDirBlend); // ADS
+					ADSBodyYaw(Player, RootYaw, AimYaw, UpperYaw);
+					break;
+				case EPlayerHandState::BOTHHAND:
+					GetMoveDirBlend(Player->GetVelocity(), Player->GetActorRotation(), MoveDirBlend); // ADS
+					ADSBodyYaw(Player, RootYaw, AimYaw, UpperYaw);
+					break;
+				}
+				break;
+			case EPlayerUpperState::ADS:
+				GetMoveDirBlend(Player->GetVelocity(), Player->GetActorRotation(), MoveDirBlend); // ADS
+				ADSBodyYaw(Player, RootYaw, AimYaw, UpperYaw);
+				break;
+			}
+		}
 		
-		UE_LOG(LogTemp, Warning, TEXT("RootYaw: %f"), RootYaw);
-		UE_LOG(LogTemp, Warning, TEXT("AimYaw: %f"), AimYaw);
-		UE_LOG(LogTemp, Warning, TEXT("UpperYaw: %f"), UpperYaw);
+		//UE_LOG(LogTemp, Warning, TEXT("RootYaw: %f"), RootYaw);
+		//UE_LOG(LogTemp, Warning, TEXT("AimYaw: %f"), AimYaw);
+		//UE_LOG(LogTemp, Warning, TEXT("UpperYaw: %f"), UpperYaw);
 		//UE_LOG(LogTemp, Warning, TEXT("Test: %f"), Test.Yaw);
 
 		LowerStateNClass = Player->LowerStateNowClass;
 		UpperStateNClass = Player->UpperStateNowClass;
+		HandStateNClass = Player->HandStateNowClass;
 
 		IsJumped = Player->bPressedJump;
 		IsFalling = Player->GetMovementComponent()->IsFalling();
@@ -194,4 +209,46 @@ void UPlayerBodyAnimInstance::ADSBodyYaw(APlayerCharacter* Player, float& Root, 
 	FRotator InterpToTurnDirAngle = (Player->GetActorRotation() - TurnDir).GetNormalized();
 	Upper = FMath::ClampAngle(InterpToTurnDirAngle.Yaw, -90.0f, 90.0f);
 	Root = -Upper;
+}
+
+void UPlayerBodyAnimInstance::ProneBodyYaw(APlayerCharacter* Player, float& Root, float& Aim, float& Upper)
+{
+	float yawEnd = 0.0f;
+	if (Player->GetVelocity().Size() > 3.0f)
+	{
+		// 움직일 때 고정된 방향(TurnDirEnd)을 움직이는 방향으로 바꾼다.
+		TurnDirEnd = Player->GetActorRotation();
+
+		if (!(Aim <= 110.0f && Aim >= -110.0f))
+		{
+			// 만약 등이 바닥을 향하게 누워있다면 향해야 되는 방향을 반대로 하기
+			TurnDirEnd = FRotator(TurnDirEnd.Pitch, TurnDirEnd.Yaw + 180.0f, TurnDirEnd.Roll);
+			IsProneBack = true; // 누워있는 상태
+		}
+		else {
+			IsProneBack = false;  // 엎드려있는 상태
+		}
+	}
+	else
+	{
+		// 움직이지 않을 때 TurnDirEnd을 ActorRotation으로 고정 시킨다.
+		if (!IsTurn) // 시작되는 순간에만 고정 되게끔 해야 된다.
+		{
+			IsTurn = true;
+			TurnDirEnd = Player->GetActorRotation();
+		}
+		if (!(Aim <= 110.0f && Aim >= -110.0f))
+		{
+			IsProneBack = true; // 누워있는 상태
+		}
+		else {
+			IsProneBack = false; // 엎드려있는 상태
+		}
+	}
+	TurnDir = FMath::RInterpTo(TurnDir, TurnDirEnd, GetWorld()->GetDeltaSeconds(), 5.0f);
+	FRotator interpToAngle = (Player->GetActorRotation() - TurnDir).GetNormalized();
+	Aim = interpToAngle.Yaw; // 엎드리기 상태일 때 는 전체를 회전 함으로 180도 값을 받아야 한다.
+	yawEnd = FMath::ClampAngle(interpToAngle.Yaw, -90.0f, 90.0f);
+	Root = 0.0f;
+	//ProneRotBlend = GetProneRotBlend(standingDirEnd.Vector(), player->GetActorRotation());
 }

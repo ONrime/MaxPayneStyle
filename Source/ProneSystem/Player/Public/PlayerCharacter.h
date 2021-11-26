@@ -27,6 +27,14 @@ enum class EPlayerLowerState : uint8 {
 	PRONE UMETA(DisplayName = "Prone")
 };
 
+// 플레이어 손 상태 표시 하는 열거형
+UENUM(BlueprintType)
+enum class EPlayerHandState : uint8 {
+	ONEHAND UMETA(DisplayName = "OneHand"),
+	TWOHAND UMETA(DisplayName = "TwoHand"),
+	BOTHHAND UMETA(DisplayName = "BothHand")
+};
+
 UCLASS()
 class PRONESYSTEM_API APlayerCharacter : public ACharacter
 {
@@ -62,9 +70,12 @@ protected:
 	// 상태
 	class UPlayerUpperStateBase* UpperState = nullptr;
 	class UPlayerLowerStateBase* LowerState = nullptr;
+	class UPlayerHandStateBase* HandState = nullptr;
 	EPlayerUpperState UpperStateNowEnum;
+	EPlayerHandState HandStateNowEnum;
 	void UpperPress(class UPlayerUpperStateBase* State = nullptr);
 	void LowerPress(class UPlayerLowerStateBase* State = nullptr);
+	void HandPress(class UPlayerHandStateBase* State = nullptr);
 
 	// 이동
 	void PlayerMove(bool IsAactive, float Forward, float Right, FVector& Dir, float Speed, float DeltaSecond);
@@ -82,8 +93,11 @@ protected:
 
 	// 입력
 	void PlayerProne();
-	void PlayerArmed();
-	void PlayerAim();
+	void PlayerCrouch();
+	void PlayerOne1();
+	void PlayerOne2();
+	void PlayerTwo();
+	void PlayerBoth();
 	void PlayerADS();
 	void PlayerUnADS();
 	void PlayerFire();
@@ -97,11 +111,16 @@ public:
 	// 상태
 	UClass* UpperStateNowClass = nullptr;
 	UClass* LowerStateNowClass = nullptr;
+	UClass* HandStateNowClass = nullptr;
 	UClass* UpperStateBeforeClass = nullptr;
 	UClass* LowerStateBeforeClass = nullptr;
+	UClass* HandStateBeforeClass = nullptr;
 	EPlayerUpperState GetUpperStateNowEnum() { return UpperStateNowEnum; }
+	EPlayerHandState GetHandStateNowEnum() { return HandStateNowEnum; }
 	class UPlayerUpperStateBase* GetUpperState() { return UpperState; }
-	FPlayerStateCheck ChangeStateCheck;
+	FPlayerStateCheck ChangeStateCheck; // 상태 클래스 내에서 상태 변경할 때 쓰인다.
+	bool IsProne = false; // AnimIns에서사용
+
 	// 이동
 	bool GetIsMove() { return IsMove; }
 	FVector GetMoveDir() { return MoveDir; }
