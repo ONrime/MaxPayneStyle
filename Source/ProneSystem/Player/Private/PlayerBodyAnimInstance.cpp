@@ -250,5 +250,28 @@ void UPlayerBodyAnimInstance::ProneBodyYaw(APlayerCharacter* Player, float& Root
 	Aim = interpToAngle.Yaw; // 엎드리기 상태일 때 는 전체를 회전 함으로 180도 값을 받아야 한다.
 	yawEnd = FMath::ClampAngle(interpToAngle.Yaw, -90.0f, 90.0f);
 	Root = 0.0f;
-	//ProneRotBlend = GetProneRotBlend(standingDirEnd.Vector(), player->GetActorRotation());
+
+	ProneRot = GetProneRotBlend(TurnDirEnd.Vector(), Player->GetActorRotation());
+}
+
+FProneRotBlend UPlayerBodyAnimInstance::GetProneRotBlend(FVector PlayerForwardLoc, FRotator PlayerRot)
+{
+	PlayerForwardLoc.Normalize();
+	FMatrix RotMatrix = FRotationMatrix(PlayerRot);
+	FVector ForwardVector = RotMatrix.GetScaledAxis(EAxis::X);
+	FVector RightVector = RotMatrix.GetScaledAxis(EAxis::Y);
+	FVector NormalizedVel = PlayerForwardLoc.GetSafeNormal2D();
+
+	float ProneDirForward = FVector::DotProduct(ForwardVector, NormalizedVel);
+	float ProneDirRight = FVector::DotProduct(RightVector, NormalizedVel);
+
+	//UE_LOG(LogTemp, Warning, TEXT("DirForward: %f"), DirForward);
+	//UE_LOG(LogTemp, Warning, TEXT("DirRight: %f"), DirRight);
+	FProneRotBlend SetRot;
+	SetRot.Front = FMath::Clamp(ProneDirForward, 0.0f, 1.0f);
+	SetRot.Back = FMath::Abs(FMath::Clamp(ProneDirForward, -1.0f, 0.0f));
+	SetRot.Left = FMath::Abs(FMath::Clamp(ProneDirRight, -1.0f, 0.0f));
+	SetRot.Right = FMath::Clamp(ProneDirRight, 0.0f, 1.0f);
+
+	return SetRot;
 }

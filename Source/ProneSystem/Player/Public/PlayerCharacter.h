@@ -72,6 +72,7 @@ protected:
 	class UPlayerLowerStateBase* LowerState = nullptr;
 	class UPlayerHandStateBase* HandState = nullptr;
 	EPlayerUpperState UpperStateNowEnum;
+	EPlayerLowerState LowerStateNowEnum;
 	EPlayerHandState HandStateNowEnum;
 	void UpperPress(class UPlayerUpperStateBase* State = nullptr);
 	void LowerPress(class UPlayerLowerStateBase* State = nullptr);
@@ -116,6 +117,7 @@ public:
 	UClass* LowerStateBeforeClass = nullptr;
 	UClass* HandStateBeforeClass = nullptr;
 	EPlayerUpperState GetUpperStateNowEnum() { return UpperStateNowEnum; }
+	EPlayerLowerState GetLowerStateNowEnum() { return LowerStateNowEnum; }
 	EPlayerHandState GetHandStateNowEnum() { return HandStateNowEnum; }
 	class UPlayerUpperStateBase* GetUpperState() { return UpperState; }
 	FPlayerStateCheck ChangeStateCheck; // 상태 클래스 내에서 상태 변경할 때 쓰인다.

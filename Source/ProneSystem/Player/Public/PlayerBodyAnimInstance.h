@@ -67,6 +67,9 @@ protected:
 	UClass* UpperStateNClass = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = true))
 	UClass* HandStateNClass = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Prone, Meta = (AllowPrivateAccess = true))
+	FProneRotBlend ProneRot;
+
 
 	// Move 贸府
 	void GetMoveDirBlend(FVector Velocity, FRotator Rot, FMoveDirBlend& Current);
@@ -81,5 +84,8 @@ protected:
 	FRotator TurnDir = FRotator::ZeroRotator;
 	FRotator TurnDirEnd = FRotator::ZeroRotator;
 	float RootRotInterpSpeed = 0.0f;
+
+	// Prone 贸府
+	FProneRotBlend GetProneRotBlend(FVector PlayerForwardLoc, FRotator PlayerRot);
 
 };

@@ -146,6 +146,7 @@ void APlayerCharacter::LowerPress(UPlayerLowerStateBase* State)
 		LowerState->DestroyComponent();
 		LowerState = temp;
 		LowerState->SetEBeforeState(Before);
+		LowerStateNowEnum = LowerState->GetEState();
 		LowerStateNowClass = LowerState->GetStateClass();
 		LowerState->StateStart(this);
 	}
@@ -238,6 +239,7 @@ void APlayerCharacter::LookUpAtRate(float Rate)
 void APlayerCharacter::PlayerProne()
 {
 	LowerPress();
+	UpperPress();
 }
 
 void APlayerCharacter::PlayerCrouch()

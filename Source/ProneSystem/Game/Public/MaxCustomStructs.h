@@ -30,3 +30,20 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float Right;
 };
+
+USTRUCT(Atomic, BlueprintType)
+struct FProneRotBlend
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float Front;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float Back;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float Left;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float Right;
+};
+
