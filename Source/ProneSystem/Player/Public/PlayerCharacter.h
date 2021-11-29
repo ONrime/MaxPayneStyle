@@ -24,7 +24,8 @@ enum class EPlayerLowerState : uint8 {
 	CROUCH UMETA(DisplayName = "Crouch"),
 	SPLINT UMETA(DisplayName = "Splint"),
 	SLIDING UMETA(DisplayName = "Sliding"),
-	PRONE UMETA(DisplayName = "Prone")
+	PRONE UMETA(DisplayName = "Prone"),
+	DODGE UMETA(DisplayName = "Dodge")
 };
 
 // 플레이어 손 상태 표시 하는 열거형
@@ -40,30 +41,30 @@ class PRONESYSTEM_API APlayerCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
-// 에디터에 노출되는 변수들
+		// 에디터에 노출되는 변수들
 public:
 	APlayerCharacter();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class UCameraComponent* FollowCamera;
+		class UCameraComponent* FollowCamera;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class USpringArmComponent* SpringArm;
+		class USpringArmComponent* SpringArm;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Arrow, meta = (AllowPrivateAccess = "true"))
-	class UArrowComponent* CameraArrow;
+		class UArrowComponent* CameraArrow;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Arrow, meta = (AllowPrivateAccess = "true"))
-	class UArrowComponent* MoveInputArrow;
+		class UArrowComponent* MoveInputArrow;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Arrow, meta = (AllowPrivateAccess = "true"))
-	class UArrowComponent* BodyArrow;
+		class UArrowComponent* BodyArrow;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = PlayerBase)
-	float PlayerSpeed = 140.0f;
+		float PlayerSpeed = 140.0f;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
-	float BaseTurnRate = 45.0f;
+		float BaseTurnRate = 45.0f;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
-	float BaseLookUpRate = 45.0f;
+		float BaseLookUpRate = 45.0f;
 
-// 감추어야 하는 기본 변수 및 함수들
+	// 감추어야 하는 기본 변수 및 함수들
 protected:
 	virtual void BeginPlay() override;
 
@@ -88,6 +89,9 @@ protected:
 	FVector MoveDir = FVector::ZeroVector;
 	FVector BodyDir = FVector::ZeroVector;
 
+	// 엎드리기
+	FRotator ProneRot = FRotator::ZeroRotator;
+
 	// 시점
 	void TurnAtRate(float Rate);
 	void LookUpAtRate(float Rate);
@@ -95,6 +99,7 @@ protected:
 	// 입력
 	void PlayerProne();
 	void PlayerCrouch();
+	void PlayerDodge();
 	void PlayerOne1();
 	void PlayerOne2();
 	void PlayerTwo();
@@ -103,8 +108,8 @@ protected:
 	void PlayerUnADS();
 	void PlayerFire();
 
-// 에디터 외에 노출해야 되는 변수 및 함수들
-public:	
+	// 에디터 외에 노출해야 되는 변수 및 함수들
+public:
 	virtual void PostInitializeComponents() override;
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -120,12 +125,19 @@ public:
 	EPlayerLowerState GetLowerStateNowEnum() { return LowerStateNowEnum; }
 	EPlayerHandState GetHandStateNowEnum() { return HandStateNowEnum; }
 	class UPlayerUpperStateBase* GetUpperState() { return UpperState; }
-	FPlayerStateCheck ChangeStateCheck; // 상태 클래스 내에서 상태 변경할 때 쓰인다.
+	FPlayerStateCheck ChangeUpperStateCheck; // 상태 클래스 내에서 상태 변경할 때 쓰인다.
+	FPlayerStateCheck ChangeLowerStateCheck; // 상태 클래스 내에서 상태 변경할 때 쓰인다.
 	bool IsProne = false; // AnimIns에서사용
+	bool IsDodge = false; // AnimIns에서사용
 
 	// 이동
 	bool GetIsMove() { return IsMove; }
+	void SetIsMove(bool Set) { IsMove = Set; }
 	FVector GetMoveDir() { return MoveDir; }
 	FVector GetBodyDir() { return BodyDir; }
+
+	// 엎드리기
+	FRotator GetProneRot() { return ProneRot; }
+	void SetProneRot(FRotator Set) { ProneRot = Set; }
 
 };

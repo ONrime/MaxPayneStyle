@@ -4,6 +4,7 @@
 #include "Player/Public/State/Lower/Standing_LowerState.h"
 #include "Player/Public/State/Lower/Crouch_LowerState.h"
 #include "Player/Public/State/Lower/Prone_LowerState.h"
+#include "Player/Public/State/Lower/Dodge_LowerState.h"
 #include "GameFramework/PlayerInput.h"
 #include "GameFramework/PlayerController.h"
 #include "Camera/CameraComponent.h"
@@ -19,6 +20,7 @@ UPlayerLowerStateBase* UStanding_LowerState::HandleInput(APlayerCharacter* Playe
 	UPlayerInput* PlayerInput = Cast<UPlayerInput>(PlayerController->PlayerInput);
 	TArray <FInputActionKeyMapping> ActionCrouch = PlayerInput->GetKeysForAction(TEXT("Crouch"));
 	TArray <FInputActionKeyMapping> ActionProne = PlayerInput->GetKeysForAction(TEXT("Prone"));
+	TArray <FInputActionKeyMapping> ActionDodge = PlayerInput->GetKeysForAction(TEXT("Dodge"));
 
 	if (PlayerInput->IsPressed(ActionCrouch[0].Key)) {
 		temp = NewObject<UCrouch_LowerState>(this, UCrouch_LowerState::StaticClass());
@@ -26,6 +28,10 @@ UPlayerLowerStateBase* UStanding_LowerState::HandleInput(APlayerCharacter* Playe
 	else if (PlayerInput->IsPressed(ActionProne[0].Key))
 	{
 		temp = NewObject<UProne_LowerState>(this, UProne_LowerState::StaticClass());
+	}
+	else if (PlayerInput->IsPressed(ActionDodge[0].Key))
+	{
+		temp = NewObject<UDodge_LowerState>(this, UDodge_LowerState::StaticClass());
 	}
 
 

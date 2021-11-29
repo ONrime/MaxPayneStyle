@@ -37,6 +37,8 @@ protected:
 	bool IsHandUp = false;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Base, Meta = (AllowPrivateAccess = true))
 	bool IsJumped = false;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Base, Meta = (AllowPrivateAccess = true))
+	bool IsMove = false;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Aim, Meta = (AllowPrivateAccess = true))
 	float UpperYaw = 0.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Aim, Meta = (AllowPrivateAccess = true))
@@ -47,6 +49,8 @@ protected:
 	float UpperProneYaw = 0.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Base, Meta = (AllowPrivateAccess = true))
 	bool IsProne = false;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Base, Meta = (AllowPrivateAccess = true))
+	bool IsDodge = false;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Base, Meta = (AllowPrivateAccess = true))
 	bool IsProneBack = false;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Base, Meta = (AllowPrivateAccess = true))
@@ -64,6 +68,8 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = true))
 	UClass* LowerStateNClass = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = true))
+	UClass* LowerStateBClass = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = true))
 	UClass* UpperStateNClass = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = true))
 	UClass* HandStateNClass = nullptr;
@@ -78,7 +84,8 @@ protected:
 	void ArmedBodyYaw(class APlayerCharacter* Player, float& Root, float& Aim, float& Upper);
 	void AimBodyYaw(class APlayerCharacter* Player, float& Root, float& Aim, float& Upper);
 	void ADSBodyYaw(class APlayerCharacter* Player, float& Root, float& Aim, float& Upper);
-	void ProneBodyYaw(class APlayerCharacter* Player, float& Root, float& Aim, float& Upper);
+	void ProneBodyYaw(class APlayerCharacter* Player, float& Root, float& Aim, float& Upper, FRotator DirEnd);
+	void DodgeBodyYaw(class APlayerCharacter* Player, float& Root, float& Aim, float& Upper, FRotator DirEnd);
 
 	bool IsTurn = false;
 	FRotator TurnDir = FRotator::ZeroRotator;

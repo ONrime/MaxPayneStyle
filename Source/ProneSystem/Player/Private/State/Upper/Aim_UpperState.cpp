@@ -84,5 +84,5 @@ UClass* UAim_UpperState::GetStateClass_Implementation()
 
 void UAim_UpperState::ChangeArmed()
 {
-	PlayerCharacter->ChangeStateCheck.Execute((int)EPlayerUpperState::ARMED);
+	PlayerCharacter->ChangeUpperStateCheck.Execute((int)EPlayerUpperState::ARMED);
 }

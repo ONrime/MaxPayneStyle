@@ -28,7 +28,16 @@ void UPlayerBodyAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		if (Player->IsProne)
 		{
 			//GetMoveDirBlend(Player->GetVelocity(), Player->GetActorRotation(), MoveDirBlend);
-			ProneBodyYaw(Player, RootYaw, AimYaw, UpperYaw);
+			ProneBodyYaw(Player, RootYaw, AimYaw, UpperYaw, Player->GetProneRot());
+			UE_LOG(LogTemp, Warning, TEXT("IsProne"));
+		}
+		else if (Player->IsDodge)
+		{
+			//IsTurn = false;
+			FVector MoveDir = Player->GetMoveDir();
+			MoveDir.Normalize();
+			DodgeBodyYaw(Player, RootYaw, AimYaw, UpperYaw, Player->GetProneRot());
+			UE_LOG(LogTemp, Warning, TEXT("IsDodge"));
 		}
 		else {
 			switch (Player->GetUpperStateNowEnum())
@@ -67,11 +76,14 @@ void UPlayerBodyAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		//UE_LOG(LogTemp, Warning, TEXT("Test: %f"), Test.Yaw);
 
 		LowerStateNClass = Player->LowerStateNowClass;
+		LowerStateBClass = Player->LowerStateBeforeClass;
 		UpperStateNClass = Player->UpperStateNowClass;
 		HandStateNClass = Player->HandStateNowClass;
 
+		IsMove = Player->GetIsMove();
 		IsJumped = Player->bPressedJump;
 		IsFalling = Player->GetMovementComponent()->IsFalling();
+		IsDodge = Player->IsDodge;
 	}
 }
 
@@ -211,13 +223,13 @@ void UPlayerBodyAnimInstance::ADSBodyYaw(APlayerCharacter* Player, float& Root, 
 	Root = -Upper;
 }
 
-void UPlayerBodyAnimInstance::ProneBodyYaw(APlayerCharacter* Player, float& Root, float& Aim, float& Upper)
+void UPlayerBodyAnimInstance::ProneBodyYaw(APlayerCharacter* Player, float& Root, float& Aim, float& Upper, FRotator DirEnd)
 {
 	float yawEnd = 0.0f;
 	if (Player->GetVelocity().Size() > 3.0f)
 	{
 		// 움직일 때 고정된 방향(TurnDirEnd)을 움직이는 방향으로 바꾼다.
-		TurnDirEnd = Player->GetActorRotation();
+		TurnDirEnd = DirEnd;
 
 		if (!(Aim <= 110.0f && Aim >= -110.0f))
 		{
@@ -235,7 +247,7 @@ void UPlayerBodyAnimInstance::ProneBodyYaw(APlayerCharacter* Player, float& Root
 		if (!IsTurn) // 시작되는 순간에만 고정 되게끔 해야 된다.
 		{
 			IsTurn = true;
-			TurnDirEnd = Player->GetActorRotation();
+			TurnDirEnd = DirEnd;
 		}
 		if (!(Aim <= 110.0f && Aim >= -110.0f))
 		{
@@ -251,7 +263,30 @@ void UPlayerBodyAnimInstance::ProneBodyYaw(APlayerCharacter* Player, float& Root
 	yawEnd = FMath::ClampAngle(interpToAngle.Yaw, -90.0f, 90.0f);
 	Root = 0.0f;
 
-	ProneRot = GetProneRotBlend(TurnDirEnd.Vector(), Player->GetActorRotation());
+	ProneRot = GetProneRotBlend(TurnDirEnd.Vector(), DirEnd);
+}
+
+void UPlayerBodyAnimInstance::DodgeBodyYaw(APlayerCharacter* Player, float& Root, float& Aim, float& Upper, FRotator DirEnd)
+{
+	// 움직이지 않을 때 TurnDirEnd을 ActorRotation으로 고정 시킨다.
+	if (!IsTurn) // 시작되는 순간에만 고정 되게끔 해야 된다.
+	{
+		IsTurn = true;
+		TurnDirEnd = DirEnd;
+	}
+	if (!(Aim <= 110.0f && Aim >= -110.0f))
+	{
+		IsProneBack = true; // 누워있는 상태
+	}
+	else {
+		IsProneBack = false; // 엎드려있는 상태
+	}
+	TurnDir = FMath::RInterpTo(TurnDir, TurnDirEnd, GetWorld()->GetDeltaSeconds(), 5.0f);
+	FRotator interpToAngle = (Player->GetActorRotation() - TurnDir).GetNormalized();
+	Aim = interpToAngle.Yaw; // 엎드리기 상태일 때 는 전체를 회전 함으로 180도 값을 받아야 한다.
+	Root = 0.0f;
+
+	ProneRot = GetProneRotBlend(TurnDirEnd.Vector(), DirEnd);
 }
 
 FProneRotBlend UPlayerBodyAnimInstance::GetProneRotBlend(FVector PlayerForwardLoc, FRotator PlayerRot)

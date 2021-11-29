@@ -42,12 +42,18 @@ void UProne_LowerState::StateStart_Implementation(APlayerCharacter* Player)
 {
 	UE_LOG(LogTemp, Warning, TEXT("UProne_LowerState: StateStart"));
 
+	if(LowerBeforeState != EPlayerLowerState::DODGE) Player->SetProneRot(Player->GetActorRotation());
 	Player->PlayerSpeed = 50.0f;
 	Player->IsProne = true;
+	if(Player->IsDodge) Player->IsDodge = false;
 }
 
 void UProne_LowerState::StateUpdate_Implementation(APlayerCharacter* Player, float DeltaSecond)
 {
+	if (Player->GetVelocity().Size() > 3.0f)
+	{
+		//Player->SetProneRot(Player->GetActorRotation());
+	}
 }
 
 void UProne_LowerState::StateEnd_Implementation(APlayerCharacter* Player)
@@ -55,7 +61,7 @@ void UProne_LowerState::StateEnd_Implementation(APlayerCharacter* Player)
 	UE_LOG(LogTemp, Warning, TEXT("UProne_LowerState: StateEnd"));
 
 	Player->IsProne = false;
-
+	Player->SetProneRot(FRotator::ZeroRotator);
 }
 
 UClass* UProne_LowerState::GetStateClass_Implementation()

@@ -92,9 +92,14 @@ void APlayerCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	ChangeStateCheck.BindLambda([this](int Set)->void
+	ChangeUpperStateCheck.BindLambda([this](int Set)->void
 	{
 		UpperPress(UpperState->ChangeState((EPlayerUpperState)Set));
+	});
+
+	ChangeLowerStateCheck.BindLambda([this](int Set)->void
+	{
+		LowerPress(LowerState->ChangeState((EPlayerLowerState)Set));
 	});
 
 }
@@ -247,6 +252,11 @@ void APlayerCharacter::PlayerCrouch()
 	LowerPress();
 }
 
+void APlayerCharacter::PlayerDodge()
+{
+	LowerPress();
+}
+
 void APlayerCharacter::PlayerOne1()
 {
 	HandPress();
@@ -295,6 +305,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 	PlayerInputComponent->BindAction("Crouch", IE_Pressed, this, &APlayerCharacter::PlayerCrouch);
 	PlayerInputComponent->BindAction("Prone", IE_Pressed, this, &APlayerCharacter::PlayerProne);
+	PlayerInputComponent->BindAction("Dodge", IE_Pressed, this, &APlayerCharacter::PlayerDodge);
 
 	PlayerInputComponent->BindAction("OneWeapon", IE_Pressed, this, &APlayerCharacter::PlayerOne1);
 	PlayerInputComponent->BindAction("TwoWeapon", IE_Pressed, this, &APlayerCharacter::PlayerOne1);
