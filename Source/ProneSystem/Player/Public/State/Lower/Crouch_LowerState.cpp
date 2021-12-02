@@ -42,10 +42,16 @@ void UCrouch_LowerState::StateStart_Implementation(APlayerCharacter* Player)
 
     Player->PlayerSpeed = 50.0f;
 
+	// 카메라
+	// 상하 조절
+	Player->LowerSpringArmLoc.Z = 50.0f;
+	Player->SpringArmLocSpeed = 8.0f;
+
 }
 
 void UCrouch_LowerState::StateUpdate_Implementation(APlayerCharacter* Player, float DeltaSecond)
 {
+
 }
 
 void UCrouch_LowerState::StateEnd_Implementation(APlayerCharacter* Player)

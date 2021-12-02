@@ -37,7 +37,13 @@ public:
 protected:
 	void ChangeArmed();
 
+	// 상태 변환
 	FTimerHandle ArmedTimer;
 	class APlayerCharacter* PlayerCharacter = nullptr;
+
+	// 카메라
+	FVector SpringArmLoc = FVector::ZeroVector;
+	float ArmLength = 0.0f;
+	float StartArmLength = 0.0f;
 
 };

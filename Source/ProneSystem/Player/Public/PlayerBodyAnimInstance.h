@@ -55,6 +55,8 @@ protected:
 	bool IsProneBack = false;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Base, Meta = (AllowPrivateAccess = true))
 	float PlayerSpeed = 0.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Base, Meta = (AllowPrivateAccess = true))
+	float InputSpeed = 0.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Move, Meta = (AllowPrivateAccess = true))
 	FMoveDirBlend MoveDirBlend;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Move, Meta = (AllowPrivateAccess = true))

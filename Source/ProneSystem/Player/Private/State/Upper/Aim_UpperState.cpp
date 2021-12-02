@@ -50,11 +50,39 @@ void UAim_UpperState::StateStart_Implementation(APlayerCharacter* Player)
 	{
 		GetWorld()->GetTimerManager().SetTimer(ArmedTimer, this, &UAim_UpperState::ChangeArmed, 5.0f, false);
 	}
-	
+
+	// 카메라
+	// 좌우 조절
+	SpringArmLoc = FVector(-35.0f, 45.0f, -5.0f);
+	StartArmLength = 300.0f;
+
+	Player->UpperSpringArmLoc.X = SpringArmLoc.X;
+	Player->UpperSpringArmLoc.Y = SpringArmLoc.Y;
+	Player->UpperSpringArmLoc.Z = SpringArmLoc.Z;
+
 }
 
 void UAim_UpperState::StateUpdate_Implementation(APlayerCharacter* Player, float DeltaSecond)
 {
+	// 카메라
+	FRotator InterpToAngle = (Player->GetControlRotation() - Player->GetActorRotation()).GetNormalized();
+	float CtrlPitch = FMath::ClampAngle(InterpToAngle.Pitch, -90.0f, 90.0f);
+
+	if (CtrlPitch >= 0.0f)
+	{
+		ArmLength = FMath::GetMappedRangeValueClamped(FVector2D(0.0f, Player->PitchUpLimite), FVector2D(StartArmLength, 30.0f), CtrlPitch);
+	}
+	else {
+		ArmLength = FMath::GetMappedRangeValueClamped(FVector2D(-0.0f, Player->PitchDownLimite), FVector2D(StartArmLength, 150.0f), CtrlPitch);
+		Player->UpperSpringArmLoc.X = FMath::GetMappedRangeValueClamped(FVector2D(-0.0f, Player->PitchDownLimite), FVector2D(SpringArmLoc.X, 20.0f), CtrlPitch);
+		Player->UpperSpringArmLoc.Z = FMath::GetMappedRangeValueClamped(FVector2D(-0.0f, Player->PitchDownLimite), FVector2D(SpringArmLoc.Z, -25.0f), CtrlPitch);
+	}
+
+	Player->SpringArm->TargetArmLength = FMath::FInterpTo(Player->SpringArm->TargetArmLength, ArmLength, DeltaSecond, 4.0f);
+	//UE_LOG(LogTemp, Warning, TEXT("Player->UpperSpringArmLoc.X: %f"), Player->UpperSpringArmLoc.X);
+	//UE_LOG(LogTemp, Warning, TEXT("Player->UpperSpringArmLoc.Z: %f"), Player->UpperSpringArmLoc.Z);
+	//UE_LOG(LogTemp, Warning, TEXT("CtrlPitch: %f"), CtrlPitch);
+	//UE_LOG(LogTemp, Warning, TEXT("TargetArmLength: %f"), Player->SpringArm->TargetArmLength);
 }
 
 void UAim_UpperState::StateEnd_Implementation(APlayerCharacter* Player)

@@ -31,14 +31,19 @@ void UDodge_LowerState::StateStart_Implementation(APlayerCharacter* Player)
 {
 	UE_LOG(LogTemp, Warning, TEXT("UDodge_LowerState: StateStart"));
 	
-	if (Player->GetProneRot() == FRotator::ZeroRotator) Player->SetProneRot(Player->GetMoveDir().Rotation());
+	Player->SetProneRot(Player->GetMoveDir().Rotation());
 	Player->IsDodge = true;
+	
 	PlayerCharacter = Player;
 	Player->SetIsMove(false);
 
 	GetWorld()->GetTimerManager().SetTimer(DodgeStartTimer, this, &UDodge_LowerState::StartDodge, 0.4f, false);
 
-	
+	// 카메라
+	// 상하 조절
+	Player->LowerSpringArmLoc.Z = 0.0f;
+	Player->SpringArmLocSpeed = 3.0f;
+
 }
 
 void UDodge_LowerState::StateUpdate_Implementation(APlayerCharacter* Player, float DeltaSecond)
@@ -47,6 +52,8 @@ void UDodge_LowerState::StateUpdate_Implementation(APlayerCharacter* Player, flo
 	{
 		PlayerCharacter->ChangeLowerStateCheck.Execute((int)EPlayerLowerState::PRONE);
 	}
+
+
 }
 
 void UDodge_LowerState::StateEnd_Implementation(APlayerCharacter* Player)
@@ -54,7 +61,7 @@ void UDodge_LowerState::StateEnd_Implementation(APlayerCharacter* Player)
 	UE_LOG(LogTemp, Warning, TEXT("UDodge_LowerState: StateEnd"));
 
 	Player->SetIsMove(true);
-	Player->IsDodge = false;
+	//Player->IsDodge = false;
 }
 
 UClass* UDodge_LowerState::GetStateClass_Implementation()

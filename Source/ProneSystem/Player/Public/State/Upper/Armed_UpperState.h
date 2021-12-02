@@ -34,4 +34,10 @@ public:
 
 	virtual UClass* GetStateClass_Implementation() override;
 
+protected:
+	// Ä«¸Þ¶ó
+	FVector SpringArmLoc = FVector::ZeroVector;
+	float ArmLength = 0.0f;
+	float StartArmLength = 0.0f;
+
 };

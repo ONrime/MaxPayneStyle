@@ -91,6 +91,9 @@ protected:
 
 	// 엎드리기
 	FRotator ProneRot = FRotator::ZeroRotator;
+	
+	// 카메라
+	FVector CurrentSpringArmLoc = FVector::ZeroVector;
 
 	// 시점
 	void TurnAtRate(float Rate);
@@ -138,6 +141,13 @@ public:
 
 	// 엎드리기
 	FRotator GetProneRot() { return ProneRot; }
-	void SetProneRot(FRotator Set) { ProneRot = Set; }
+	void SetProneRot(FRotator Set) { ProneRot = Set;}
+
+	// 카메라
+	FVector LowerSpringArmLoc = FVector::ZeroVector;
+	FVector UpperSpringArmLoc = FVector::ZeroVector;
+	float SpringArmLocSpeed = 0.0f;
+	float PitchUpLimite = 80.0f;
+	float PitchDownLimite = -70.0f;
 
 };

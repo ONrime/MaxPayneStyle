@@ -24,20 +24,16 @@ void UPlayerBodyAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		UpperPitch = FMath::ClampAngle(InterpToAngle.Pitch, -90.0f, 90.0f);
 
 		PlayerSpeed = Player->GetVelocity().Size();
+		InputSpeed = Player->GetMoveDir().Size();
+		//UE_LOG(LogTemp, Warning, TEXT("InputSpeed: %f"), InputSpeed);
 
 		if (Player->IsProne)
 		{
-			//GetMoveDirBlend(Player->GetVelocity(), Player->GetActorRotation(), MoveDirBlend);
 			ProneBodyYaw(Player, RootYaw, AimYaw, UpperYaw, Player->GetProneRot());
-			UE_LOG(LogTemp, Warning, TEXT("IsProne"));
 		}
 		else if (Player->IsDodge)
 		{
-			//IsTurn = false;
-			FVector MoveDir = Player->GetMoveDir();
-			MoveDir.Normalize();
 			DodgeBodyYaw(Player, RootYaw, AimYaw, UpperYaw, Player->GetProneRot());
-			UE_LOG(LogTemp, Warning, TEXT("IsDodge"));
 		}
 		else {
 			switch (Player->GetUpperStateNowEnum())
@@ -226,7 +222,7 @@ void UPlayerBodyAnimInstance::ADSBodyYaw(APlayerCharacter* Player, float& Root, 
 void UPlayerBodyAnimInstance::ProneBodyYaw(APlayerCharacter* Player, float& Root, float& Aim, float& Upper, FRotator DirEnd)
 {
 	float yawEnd = 0.0f;
-	if (Player->GetVelocity().Size() > 3.0f)
+	if (Player->GetMoveDir().Size() >= 2.0f)
 	{
 		// 움직일 때 고정된 방향(TurnDirEnd)을 움직이는 방향으로 바꾼다.
 		TurnDirEnd = DirEnd;

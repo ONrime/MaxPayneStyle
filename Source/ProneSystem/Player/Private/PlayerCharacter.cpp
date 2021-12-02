@@ -79,9 +79,14 @@ void APlayerCharacter::BeginPlay()
 	Super::BeginPlay();
 	
 	UpperState = NewObject<UArmed_UpperState>(this, UArmed_UpperState::StaticClass());
-	//UpperState = NewObject<UAim_UpperState>(this, UAim_UpperState::StaticClass());
+	UpperStateNowEnum = UpperState->GetEState();
+	UpperStateNowClass = UpperState->GetStateClass();
 	LowerState = NewObject<UStanding_LowerState>(this, UStanding_LowerState::StaticClass());
+	LowerStateNowEnum = LowerState->GetEState();
+	LowerStateNowClass = LowerState->GetStateClass();
 	HandState = NewObject<UOneHand_HandState>(this, UOneHand_HandState::StaticClass());
+	HandStateNowEnum = HandState->GetEState();
+	HandStateNowClass = HandState->GetStateClass();
 	UpperState->StateStart(this);
 	LowerState->StateStart(this);
 	HandState->StateStart(this);
@@ -113,6 +118,10 @@ void APlayerCharacter::Tick(float DeltaTime)
 	HandState->StateUpdate(this, DeltaTime);
 
 	PlayerMove(IsMove, InputForwardDir, InputRightDir, MoveDir, PlayerSpeed, DeltaTime);
+
+	// Ä«¸Þ¶ó
+	CurrentSpringArmLoc = FMath::VInterpTo(CurrentSpringArmLoc, LowerSpringArmLoc + UpperSpringArmLoc, DeltaTime, SpringArmLocSpeed);
+	SpringArm->SetRelativeLocation(CurrentSpringArmLoc);
 
 }
 
@@ -238,7 +247,23 @@ void APlayerCharacter::TurnAtRate(float Rate)
 void APlayerCharacter::LookUpAtRate(float Rate)
 {
 	float PitchRate = Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds();
+	FRotator InterpToAngle = (GetControlRotation() - GetActorRotation()).GetNormalized();
+	float CtrlPitch = FMath::ClampAngle(InterpToAngle.Pitch, -90.0f, 90.0f);
+
+	if (CtrlPitch <= PitchDownLimite && PitchRate > 0.0f) {
+		PitchRate = 0.0f;
+	}
+	else if (CtrlPitch >= PitchUpLimite && PitchRate < 0.0f)
+	{
+		PitchRate = 0.0f;
+	}
 	AddControllerPitchInput(PitchRate);
+
+	//ArmDistance = FMath::GetMappedRangeValueClamped(FVector2D(00.0f, PitchUpLimite), FVector2D(0.0f, 10.0f), CtrlPitch);
+	//FVector tset = FollowCamera->GetForwardVector() * PitchRate * -10.0f + SpringArm->GetComponentLocation();
+
+	//SpringArm->SetWorldLocation(tset);
+
 }
 
 void APlayerCharacter::PlayerProne()

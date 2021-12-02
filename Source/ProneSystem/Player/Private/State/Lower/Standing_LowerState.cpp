@@ -48,10 +48,20 @@ void UStanding_LowerState::StateStart_Implementation(APlayerCharacter* Player)
 	UE_LOG(LogTemp, Warning, TEXT("UStanding_LowerState: StateStart"));
 
 	Player->PlayerSpeed = 100.f;
+
+	// 카메라
+	 // 상하 조절
+	Player->LowerSpringArmLoc.Z = 80.0f;
+	Player->SpringArmLocSpeed = 8.0f;
+	 // 상하 시점 한계 지점 설정
+	Player->PitchUpLimite = 80.0f;
+	Player->PitchDownLimite = -45.0f;
+
 }
 
 void UStanding_LowerState::StateUpdate_Implementation(APlayerCharacter* Player, float DeltaSecond)
 {
+
 }
 
 void UStanding_LowerState::StateEnd_Implementation(APlayerCharacter* Player)
