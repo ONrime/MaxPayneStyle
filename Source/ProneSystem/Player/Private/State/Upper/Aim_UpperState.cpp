@@ -57,7 +57,13 @@ void UAim_UpperState::StateStart_Implementation(APlayerCharacter* Player)
 	StartArmLength = 300.0f;
 
 	Player->UpperSpringArmLoc.X = SpringArmLoc.X;
-	Player->UpperSpringArmLoc.Y = SpringArmLoc.Y;
+	if (Player->GetLowerStateNowEnum() == EPlayerLowerState::PRONE)
+	{
+		Player->UpperSpringArmLoc.Y = 0.0f;
+	}
+	else {
+		Player->UpperSpringArmLoc.Y = SpringArmLoc.Y;
+	}
 	Player->UpperSpringArmLoc.Z = SpringArmLoc.Z;
 
 }

@@ -43,9 +43,12 @@ void UCrouch_LowerState::StateStart_Implementation(APlayerCharacter* Player)
     Player->PlayerSpeed = 50.0f;
 
 	// 카메라
-	// 상하 조절
+	 // 상하 조절
 	Player->LowerSpringArmLoc.Z = 50.0f;
 	Player->SpringArmLocSpeed = 8.0f;
+	 // 상하 시점 한계 지점 설정
+	Player->PitchUpLimite = 80.0f;
+	Player->PitchDownLimite = -45.0f;
 
 }
 

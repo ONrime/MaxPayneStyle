@@ -51,9 +51,15 @@ void UProne_LowerState::StateStart_Implementation(APlayerCharacter* Player)
 	if(Player->IsDodge) Player->IsDodge = false;
 
 	// 카메라
-	// 상하 조절
+	 // 상하 조절
+	Player->LowerSpringArmLoc.Y = 0.0f;
+	Player->UpperSpringArmLoc.Y = 0.0f;
 	Player->LowerSpringArmLoc.Z = 0.0f;
 	Player->SpringArmLocSpeed = 8.0f;
+	 // 상하 시점 한계 지점 설정
+	Player->PitchUpLimite = 60.0f;
+	Player->PitchDownLimite = -30.0f;
+
 }
 
 void UProne_LowerState::StateUpdate_Implementation(APlayerCharacter* Player, float DeltaSecond)

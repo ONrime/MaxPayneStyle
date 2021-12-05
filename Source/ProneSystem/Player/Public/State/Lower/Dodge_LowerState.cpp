@@ -37,10 +37,12 @@ void UDodge_LowerState::StateStart_Implementation(APlayerCharacter* Player)
 	PlayerCharacter = Player;
 	Player->SetIsMove(false);
 
-	GetWorld()->GetTimerManager().SetTimer(DodgeStartTimer, this, &UDodge_LowerState::StartDodge, 0.4f, false);
+	GetWorld()->GetTimerManager().SetTimer(DodgeStartTimer, this, &UDodge_LowerState::StartDodge, 0.15f, false);
+	//StartDodge();
 
 	// 카메라
-	// 상하 조절
+	 // 상하 조절
+	Player->LowerSpringArmLoc.Y = 0.0f;
 	Player->LowerSpringArmLoc.Z = 0.0f;
 	Player->SpringArmLocSpeed = 3.0f;
 
