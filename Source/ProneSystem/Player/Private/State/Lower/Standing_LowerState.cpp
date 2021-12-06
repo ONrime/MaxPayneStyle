@@ -22,6 +22,25 @@ UPlayerLowerStateBase* UStanding_LowerState::HandleInput(APlayerCharacter* Playe
 	TArray <FInputActionKeyMapping> ActionProne = PlayerInput->GetKeysForAction(TEXT("Prone"));
 	TArray <FInputActionKeyMapping> ActionDodge = PlayerInput->GetKeysForAction(TEXT("Dodge"));
 
+	/*for (auto Crouch : ActionCrouch)
+	{
+		if (PlayerInput->IsPressed(Crouch.Key)) {
+			temp = NewObject<UCrouch_LowerState>(this, UCrouch_LowerState::StaticClass());
+		}
+	}
+	for (auto Prone : ActionProne)
+	{
+		if (PlayerInput->IsPressed(Prone.Key)) {
+			temp = NewObject<UProne_LowerState>(this, UCrouch_LowerState::StaticClass());
+		}
+	}
+	for (auto Dodge : ActionDodge)
+	{
+		if (PlayerInput->IsPressed(Dodge.Key)) {
+			temp = NewObject<UDodge_LowerState>(this, UCrouch_LowerState::StaticClass());
+		}
+	}*/
+
 	if (PlayerInput->IsPressed(ActionCrouch[0].Key)) {
 		temp = NewObject<UCrouch_LowerState>(this, UCrouch_LowerState::StaticClass());
 	}
@@ -33,7 +52,6 @@ UPlayerLowerStateBase* UStanding_LowerState::HandleInput(APlayerCharacter* Playe
 	{
 		temp = NewObject<UDodge_LowerState>(this, UDodge_LowerState::StaticClass());
 	}
-
 
 	return temp;
 }
@@ -47,7 +65,7 @@ void UStanding_LowerState::StateStart_Implementation(APlayerCharacter* Player)
 {
 	UE_LOG(LogTemp, Warning, TEXT("UStanding_LowerState: StateStart"));
 
-	Player->PlayerSpeed = 100.f;
+	Player->PlayerSpeed = 70.f;
 
 	// 카메라
 	 // 상하 조절
@@ -61,7 +79,8 @@ void UStanding_LowerState::StateStart_Implementation(APlayerCharacter* Player)
 
 void UStanding_LowerState::StateUpdate_Implementation(APlayerCharacter* Player, float DeltaSecond)
 {
-
+	//UE_LOG(LogTemp, Warning, TEXT("LowerSpringArmLoc.Z: %f"), Player->LowerSpringArmLoc.Z);
+	//UE_LOG(LogTemp, Warning, TEXT("SpringArm.Z: %f"), Player->SpringArm->GetRelativeLocation().Z);
 }
 
 void UStanding_LowerState::StateEnd_Implementation(APlayerCharacter* Player)

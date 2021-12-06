@@ -32,8 +32,12 @@ public:
 protected:
 	APlayerCharacter* PlayerCharacter = nullptr;
 	void StartDodge();
+	void MiddleDodge();
 	FTimerHandle DodgeStartTimer;
+	FTimerHandle DodgeMiddleTimer;
 	bool IsDodgeStart = false;
+	bool IsDodgeMiddle = false;
+	float CurrentBulletTime = 0.35f;
 
 
 };

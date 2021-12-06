@@ -44,9 +44,9 @@ void UProne_LowerState::StateStart_Implementation(APlayerCharacter* Player)
 
 	if (LowerBeforeState != EPlayerLowerState::DODGE) {
 		Player->SetProneRot(Player->GetActorRotation());
-		UE_LOG(LogTemp, Warning, TEXT("UProne_LowerState: DodgeCheck"));
+		//UE_LOG(LogTemp, Warning, TEXT("UProne_LowerState: DodgeCheck"));
 	}
-	Player->PlayerSpeed = 50.0f;
+	Player->PlayerSpeed = 10.0f;
 	Player->IsProne = true;
 	if(Player->IsDodge) Player->IsDodge = false;
 
@@ -69,7 +69,8 @@ void UProne_LowerState::StateUpdate_Implementation(APlayerCharacter* Player, flo
 		Player->SetProneRot(Player->GetActorRotation());
 		//UE_LOG(LogTemp, Warning, TEXT("UProne_LowerState: DodgeCheck"));
 	}
-
+	//UE_LOG(LogTemp, Warning, TEXT("LowerSpringArmLoc.Z: %f"), Player->LowerSpringArmLoc.Z);
+	//UE_LOG(LogTemp, Warning, TEXT("SpringArm.Z: %f"), Player->SpringArm->GetRelativeLocation().Z);
 }
 
 void UProne_LowerState::StateEnd_Implementation(APlayerCharacter* Player)
@@ -77,6 +78,8 @@ void UProne_LowerState::StateEnd_Implementation(APlayerCharacter* Player)
 	UE_LOG(LogTemp, Warning, TEXT("UProne_LowerState: StateEnd"));
 
 	Player->IsProne = false;
+	Player->SetMoveDir(FVector(Player->GetActorForwardVector().X, Player->GetActorForwardVector().Y, 0.0f));
+	Player->SetBodyDir(FVector(Player->GetActorForwardVector().X, Player->GetActorForwardVector().Y, 0.0f));
 	//Player->SetProneRot(FRotator::ZeroRotator);
 }
 

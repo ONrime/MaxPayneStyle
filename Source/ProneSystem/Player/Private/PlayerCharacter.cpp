@@ -37,9 +37,9 @@ APlayerCharacter::APlayerCharacter()
 	SpringArm->SetRelativeLocation(FVector(0.0f, 60.0f, 80.0f));
 	SpringArm->TargetArmLength = 300.0f;
 	SpringArm->bUsePawnControlRotation = true;
-	SpringArm->bInheritPitch = true;
+	SpringArm->bInheritPitch = false;
 	SpringArm->bInheritRoll = false;
-	SpringArm->bInheritYaw = true;
+	SpringArm->bInheritYaw = false;
 
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
@@ -59,17 +59,17 @@ APlayerCharacter::APlayerCharacter()
 	CameraArrow = CreateDefaultSubobject<UArrowComponent>(TEXT("CameraArrow"));
 	CameraArrow->SetupAttachment(RootComponent);
 	CameraArrow->ArrowColor = FColor(255, 0, 0, 255);
-	CameraArrow->bHiddenInGame = false;
+	CameraArrow->bHiddenInGame = true;
 
 	MoveInputArrow = CreateDefaultSubobject<UArrowComponent>(TEXT("MoveInputArrow"));
 	MoveInputArrow->SetupAttachment(RootComponent);
 	MoveInputArrow->ArrowColor = FColor(0, 255, 0, 255);
-	MoveInputArrow->bHiddenInGame = false;
+	MoveInputArrow->bHiddenInGame = true;
 
 	BodyArrow = CreateDefaultSubobject<UArrowComponent>(TEXT("BodyArrow"));
 	BodyArrow->SetupAttachment(RootComponent);
 	BodyArrow->ArrowColor = FColor(0, 0, 255, 255);
-	BodyArrow->bHiddenInGame = false;
+	BodyArrow->bHiddenInGame = true;
 
 }
 
@@ -120,8 +120,9 @@ void APlayerCharacter::Tick(float DeltaTime)
 	PlayerMove(IsMove, InputForwardDir, InputRightDir, MoveDir, PlayerSpeed, DeltaTime);
 
 	// Ä«¸Þ¶ó
-	CurrentSpringArmLoc = FMath::VInterpTo(CurrentSpringArmLoc, LowerSpringArmLoc + UpperSpringArmLoc, DeltaTime, SpringArmLocSpeed);
-	SpringArm->SetRelativeLocation(CurrentSpringArmLoc);
+	//CurrentSpringArmLoc = FMath::VInterpTo(CurrentSpringArmLoc, LowerSpringArmLoc + UpperSpringArmLoc, DeltaTime, SpringArmLocSpeed);
+	//SpringArm->SetRelativeLocation(CurrentSpringArmLoc);
+	SpringArm->SetWorldLocation(FVector(1153.0f, 339.0f, 310.0f));
 
 }
 
@@ -280,6 +281,7 @@ void APlayerCharacter::PlayerCrouch()
 void APlayerCharacter::PlayerDodge()
 {
 	LowerPress();
+	UpperPress();
 }
 
 void APlayerCharacter::PlayerOne1()
@@ -341,5 +343,10 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAxis("MoveRight", this, &APlayerCharacter::MoveRight);
 	PlayerInputComponent->BindAxis("TurnRate", this, &APlayerCharacter::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &APlayerCharacter::LookUpAtRate);
+}
+
+void APlayerCharacter::BulletTime(float Set)
+{
+	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), Set);
 }
 

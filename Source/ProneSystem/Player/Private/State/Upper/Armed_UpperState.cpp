@@ -22,11 +22,13 @@ UPlayerUpperStateBase* UArmed_UpperState::HandleInput(APlayerCharacter* Player)
 	TArray <FInputActionKeyMapping> ActionADS = PlayerInput->GetKeysForAction(TEXT("ADS"));
 	TArray <FInputActionKeyMapping> ActionFire = PlayerInput->GetKeysForAction(TEXT("Fire"));
 	TArray <FInputActionKeyMapping> ActionProne = PlayerInput->GetKeysForAction(TEXT("Prone"));
+	TArray <FInputActionKeyMapping> ActionDodge = PlayerInput->GetKeysForAction(TEXT("Dodge"));
 
 	if (PlayerInput->IsPressed(ActionADS[0].Key)) {
 		temp = NewObject<UADS_UpperState>(this, UADS_UpperState::StaticClass());
 	}
-	else if (PlayerInput->IsPressed(ActionFire[0].Key) || PlayerInput->IsPressed(ActionProne[0].Key)){
+	else if (PlayerInput->IsPressed(ActionFire[0].Key) || PlayerInput->IsPressed(ActionProne[0].Key)
+		|| PlayerInput->IsPressed(ActionDodge[0].Key)){
 		temp = NewObject<UAim_UpperState>(this, UAim_UpperState::StaticClass());
 	}
 

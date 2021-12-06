@@ -40,7 +40,7 @@ void UCrouch_LowerState::StateStart_Implementation(APlayerCharacter* Player)
 {
     UE_LOG(LogTemp, Warning, TEXT("UCrouch_LowerState: StateStart"));
 
-    Player->PlayerSpeed = 50.0f;
+    Player->PlayerSpeed = 30.0f;
 
 	// 카메라
 	 // 상하 조절

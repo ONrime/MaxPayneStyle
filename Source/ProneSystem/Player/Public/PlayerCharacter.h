@@ -134,10 +134,9 @@ public:
 	bool IsDodge = false; // AnimIns에서사용
 
 	// 이동
-	bool GetIsMove() { return IsMove; }
-	void SetIsMove(bool Set) { IsMove = Set; }
-	FVector GetMoveDir() { return MoveDir; }
-	FVector GetBodyDir() { return BodyDir; }
+	bool GetIsMove() { return IsMove; } void SetIsMove(bool Set) { IsMove = Set; }
+	FVector GetMoveDir() { return MoveDir; } void SetMoveDir(FVector Set) { MoveDir = Set; }
+	FVector GetBodyDir() { return BodyDir; } void SetBodyDir(FVector Set) { BodyDir = Set; }
 
 	// 엎드리기
 	FRotator GetProneRot() { return ProneRot; }
@@ -149,5 +148,8 @@ public:
 	float SpringArmLocSpeed = 0.0f;
 	float PitchUpLimite = 80.0f;
 	float PitchDownLimite = -70.0f;
+
+	// Bullet Time
+	void BulletTime(float Set);
 
 };

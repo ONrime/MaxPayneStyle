@@ -39,6 +39,8 @@ protected:
 	bool IsJumped = false;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Base, Meta = (AllowPrivateAccess = true))
 	bool IsMove = false;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Base, Meta = (AllowPrivateAccess = true))
+	float TurnStart = 0.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Aim, Meta = (AllowPrivateAccess = true))
 	float UpperYaw = 0.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Aim, Meta = (AllowPrivateAccess = true))
@@ -77,6 +79,24 @@ protected:
 	UClass* HandStateNClass = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Prone, Meta = (AllowPrivateAccess = true))
 	FProneRotBlend ProneRot;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Prone, Meta = (AllowPrivateAccess = true))
+	float ProneIK_Upper = 0.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Prone, Meta = (AllowPrivateAccess = true))
+	FRotator ProneIK_Upper_Rot = FRotator::ZeroRotator;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Prone, Meta = (AllowPrivateAccess = true))
+	FRotator ProneIK_Pelvis_Rot = FRotator::ZeroRotator;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Prone, Meta = (AllowPrivateAccess = true))
+	FRotator ProneIK_Right_Knee_Rot = FRotator::ZeroRotator;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Prone, Meta = (AllowPrivateAccess = true))
+	FRotator ProneIK_Left_Knee_Rot = FRotator::ZeroRotator;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Prone, Meta = (AllowPrivateAccess = true))
+	FRotator ProneIK_Right_Foot_Rot = FRotator::ZeroRotator;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Prone, Meta = (AllowPrivateAccess = true))
+	FRotator ProneIK_Left_Foot_Rot = FRotator::ZeroRotator;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Prone, Meta = (AllowPrivateAccess = true))
+	FRotator ProneIK_Right_Hand_Rot = FRotator::ZeroRotator;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Prone, Meta = (AllowPrivateAccess = true))
+	FRotator ProneIK_Left_Hand_Rot = FRotator::ZeroRotator;
 
 
 	// Move 처리
@@ -96,5 +116,11 @@ protected:
 
 	// Prone 처리
 	FProneRotBlend GetProneRotBlend(FVector PlayerForwardLoc, FRotator PlayerRot);
+	 // Prone IK
+	FVector ProneRootIK(class APlayerCharacter* Player, FName BoneName, FRotator& Rot, bool IsShow);
+	FVector ProneMiddleIK(class APlayerCharacter* Player, FName BoneName, FRotator& Rot, FVector Dir, bool IsShow);
+	void ProneEndIK(class APlayerCharacter* Player, FName BoneName, FRotator& Rot, FVector Dir, bool IsShow);
+	 // 중심축과 지형지물에서 위를 가리키는 축 사이의 각을 구하는 함수입니다.
+	float ProneDegrees(float ImpactNomalXY, float ImpactNomalZ, float DirXY, float DirZ, float XY);
 
 };

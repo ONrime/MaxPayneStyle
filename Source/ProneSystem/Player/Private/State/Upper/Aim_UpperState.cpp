@@ -19,11 +19,12 @@ UPlayerUpperStateBase* UAim_UpperState::HandleInput(APlayerCharacter* Player)
 	UPlayerInput* PlayerInput = Cast<UPlayerInput>(PlayerController->PlayerInput);
 	TArray <FInputActionKeyMapping> ActionADS = PlayerInput->GetKeysForAction(TEXT("ADS"));
 	TArray <FInputActionKeyMapping> ActionProne = PlayerInput->GetKeysForAction(TEXT("Prone"));
+	TArray <FInputActionKeyMapping> ActionDodge = PlayerInput->GetKeysForAction(TEXT("Dodge"));
 
 	if (PlayerInput->IsPressed(ActionADS[0].Key)) {
 		temp = NewObject<UADS_UpperState>(this, UADS_UpperState::StaticClass());
 	}
-	else if (PlayerInput->IsPressed(ActionProne[0].Key))
+	else if (PlayerInput->IsPressed(ActionProne[0].Key) || PlayerInput->IsPressed(ActionDodge[0].Key))
 	{
 		temp = NewObject<UAim_UpperState>(this, UAim_UpperState::StaticClass());
 	}
@@ -46,7 +47,7 @@ void UAim_UpperState::StateStart_Implementation(APlayerCharacter* Player)
     UE_LOG(LogTemp, Warning, TEXT("UAim_UpperState: StateStart"));
 
 	PlayerCharacter = Player;
-	if (Player->GetLowerStateNowEnum() != EPlayerLowerState::PRONE)
+	if (Player->GetLowerStateNowEnum() != EPlayerLowerState::PRONE && Player->GetLowerStateNowEnum() != EPlayerLowerState::DODGE)
 	{
 		GetWorld()->GetTimerManager().SetTimer(ArmedTimer, this, &UAim_UpperState::ChangeArmed, 5.0f, false);
 	}
@@ -57,7 +58,7 @@ void UAim_UpperState::StateStart_Implementation(APlayerCharacter* Player)
 	StartArmLength = 300.0f;
 
 	Player->UpperSpringArmLoc.X = SpringArmLoc.X;
-	if (Player->GetLowerStateNowEnum() == EPlayerLowerState::PRONE)
+	if (Player->GetLowerStateNowEnum() == EPlayerLowerState::PRONE || Player->GetLowerStateNowEnum() == EPlayerLowerState::DODGE)
 	{
 		Player->UpperSpringArmLoc.Y = 0.0f;
 	}
@@ -104,7 +105,7 @@ void UAim_UpperState::PlayerFire(APlayerCharacter* Player)
 {
 	Super::PlayerFire(Player);
 
-	if (Player->GetLowerStateNowEnum() != EPlayerLowerState::PRONE)
+	if (Player->GetLowerStateNowEnum() != EPlayerLowerState::PRONE && Player->GetLowerStateNowEnum() != EPlayerLowerState::DODGE)
 	{
 		GetWorld()->GetTimerManager().ClearTimer(ArmedTimer);
 		GetWorld()->GetTimerManager().SetTimer(ArmedTimer, this, &UAim_UpperState::ChangeArmed, 5.0f, false);
