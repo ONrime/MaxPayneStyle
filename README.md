@@ -7,7 +7,7 @@ Unreal Engine 4
 
 ## 영상
 
-[![시연 영상](http://img.youtube.com/vi/wfEtd-J14to&t=87s/0.jpg)](https://www.youtube.com/watch?v=wfEtd-J14to&t=87s) 
+[![시연 영상](http://img.youtube.com/vi/wfEtd-J14to&t=87s/1.jpg)](https://www.youtube.com/watch?v=wfEtd-J14to&t=87s) 
 
 ## 진행상황
 기본적인 움직임(양손, 한손, 두손), 360도 회전 구현 완료, 회피(Dodge) 구현
